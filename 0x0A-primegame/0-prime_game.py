@@ -1,48 +1,29 @@
 #!/usr/bin/python3
-"""
-Contains method to determine the winner of a game
-of prime numbers.
-"""
-
-
-def prime_numbers_between(n):
-    """
-    calculate prime numbers between 1 and n
-
-    Args:
-        n (int): the number to calculate prime numbers up to
-
-    Returns: the number of prime numbers between 1 and n
-    """
-    prime_numbers = 0
-
-    for i in range(2, n + 1):
-        is_prime = all(i % j != 0 for j in range(2, i // 2 + 1))
-        if is_prime:
-            prime_numbers += 1
-    return prime_numbers
-
+""" Module for solving prime game question """
 
 def isWinner(x, nums):
-    """
-    Determines the winner of a game of prime numbers.
-
-    Args:
-        x (int): the number of rounds to play
-        nums (list): the list of numbers n to play
-
-    Returns: the winner of the game (Ben or Maria)
-    """
-    if not x or not nums:
+    """function that checks for the winner"""
+    if not nums or x < 1:
         return None
-    ben = 0
-    maria = 0
-    for i in range(x):
-        prime_nums = prime_numbers_between(nums[i])
-        if prime_nums % 2 == 0:
-            ben += 1
-        else:
-            maria += 1
-    if ben == maria:
+    max_num = max(nums)
+
+    my_filter = [True for _ in range(max(max_num + 1, 2))]
+    for i in range(2, int(pow(max_num, 0.5)) + 1):
+        if not my_filter[i]:
+            continue
+        for j in range(i * i, max_num + 1, i):
+            my_filter[j] = False
+    my_filter[0] = my_filter[1] = False
+    y = 0
+    for i in range(len(my_filter)):
+        if my_filter[i]:
+            y += 1
+        my_filter[i] = y
+    player1 = 0
+    for x in nums:
+        player1 += my_filter[x] % 2 == 1
+    if player1 * 2 == len(nums):
         return None
-    return "Ben" if ben > maria else "Mari"
+    if player1 * 2 > len(nums):
+        return "Maria"
+    return "Ben"
